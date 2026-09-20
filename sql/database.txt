@@ -1,0 +1,309 @@
+/*
+    London Underground Event Database
+    Database Systems Project
+
+    Oracle SQL implementation
+
+    Includes:
+    - Table creation
+    - Primary and foreign keys
+    - Constraints
+    - Sample data
+    - Validation trigger
+    - Database views
+
+    Usage:
+    Run this script in Oracle LiveSQL or a compatible
+    Oracle Database environment.
+*/
+
+CREATE TABLE PurchaseMedium (
+    TID VARCHAR2(20) PRIMARY KEY,
+    MediumType VARCHAR2(20) NOT NULL,
+    UniqueID VARCHAR2(50) NOT NULL
+);
+
+CREATE TABLE Passenger (
+    PID VARCHAR2(20) PRIMARY KEY,
+    FullName VARCHAR2(100) NOT NULL,
+    Expiry DATE,
+    CardNo VARCHAR2(50),
+    SecurityCode VARCHAR2(10),
+    TID VARCHAR2(20) NOT NULL,
+    
+    FOREIGN KEY (TID) REFERENCES PurchaseMedium(TID)
+);
+
+CREATE TABLE Line (
+    LID VARCHAR2(10) PRIMARY KEY,
+    LineName VARCHAR2(100) NOT NULL
+);
+
+CREATE TABLE Station (
+    SID VARCHAR2(10) PRIMARY KEY,
+    StationName VARCHAR2(100) NOT NULL,
+    HasBarriers CHAR(1) CHECK (HasBarriers IN ('Y','N'))
+);
+
+CREATE TABLE StationLine (
+    SID VARCHAR2(10),
+    LID VARCHAR2(10),
+
+    PRIMARY KEY (SID, LID),
+
+    FOREIGN KEY (SID) REFERENCES Station(SID),
+    FOREIGN KEY (LID) REFERENCES Line(LID)
+);
+
+CREATE TABLE Event (
+    EID VARCHAR2(20) PRIMARY KEY,
+    EventType VARCHAR2(20) NOT NULL,
+    EventDateTime TIMESTAMP NOT NULL,
+    Fare NUMBER(6,2),
+
+    SID VARCHAR2(10) NOT NULL,
+    LID VARCHAR2(10) NOT NULL,
+    TID VARCHAR2(20) NOT NULL,
+
+    FOREIGN KEY (TID) REFERENCES PurchaseMedium(TID),
+    FOREIGN KEY (SID, LID) REFERENCES StationLine(SID, LID)
+);
+
+INSERT INTO Line VALUES ('CEN', 'Central Line');
+INSERT INTO Line VALUES ('JUB', 'Jubilee Line');
+INSERT INTO Line VALUES ('DLR', 'DLR');
+INSERT INTO Line VALUES ('PIC', 'Piccadilly Line');
+
+INSERT INTO Station VALUES ('STR', 'Stratford', 'Y');
+INSERT INTO Station VALUES ('LST', 'Liverpool Street', 'Y');
+INSERT INTO Station VALUES ('BNK', 'Bank', 'N');
+INSERT INTO Station VALUES ('OXF', 'Oxford Circus', 'Y');
+INSERT INTO Station VALUES ('LDN', 'London Fields', 'N');
+
+INSERT INTO StationLine VALUES ('STR', 'CEN');
+INSERT INTO StationLine VALUES ('STR', 'JUB');
+INSERT INTO StationLine VALUES ('STR', 'DLR');
+INSERT INTO StationLine VALUES ('STR', 'PIC');
+
+INSERT INTO StationLine VALUES ('LST', 'CEN');
+INSERT INTO StationLine VALUES ('BNK', 'CEN');
+INSERT INTO StationLine VALUES ('OXF', 'CEN');
+
+INSERT INTO PurchaseMedium VALUES ('T1', 'Oyster', 'OYSTR-22191');
+INSERT INTO PurchaseMedium VALUES ('T2', 'Card',   'CARD-4491');
+INSERT INTO PurchaseMedium VALUES ('T3', 'Ticket', 'TKT-55211');
+
+INSERT INTO Passenger VALUES (
+    'P1', 'Alice Brown', NULL, '4444333322221111', '123', 'T1'
+);
+
+INSERT INTO Passenger VALUES (
+    'P2', 'John Smith', NULL, '5555444433332222', '999', 'T2'
+);
+
+INSERT INTO Event VALUES (
+    'E1', 'CHECKIN', SYSTIMESTAMP, NULL,
+    'STR', 'CEN', 'T1'
+);
+
+INSERT INTO Event VALUES (
+    'E2', 'CHECKOUT', SYSTIMESTAMP, 2.80,
+    'LST', 'CEN', 'T1'
+);
+
+INSERT INTO Event VALUES (
+    'E3', 'CHECKIN', SYSTIMESTAMP, NULL,
+    'STR', 'PIC', 'T1'
+);
+
+CREATE OR REPLACE VIEW LatestEventPerMedium AS
+SELECT *
+FROM (
+    SELECT
+        TID,
+        EID,
+        EventType,
+        SID,
+        LID,
+        Fare,
+        EventDateTime,
+        ROW_NUMBER() OVER (PARTITION BY TID ORDER BY EventDateTime DESC) AS rn
+    FROM Event
+)
+WHERE rn = 1;
+ALTER TABLE Passenger
+DROP COLUMN TID;
+
+ALTER TABLE PurchaseMedium
+ADD PID VARCHAR2(20)
+    REFERENCES Passenger(PID);
+
+
+UPDATE PurchaseMedium
+SET PID = 'P2'
+WHERE TID = 'T2';
+COMMIT;
+
+ALTER TABLE PurchaseMedium
+ADD CONSTRAINT card_must_have_pid
+CHECK (
+    (MediumType = 'Card' AND PID IS NOT NULL)
+    OR
+    (MediumType <> 'Card')
+);
+
+UPDATE Passenger
+SET Expiry = DATE '2027-06-01'
+WHERE PID = 'P1';
+
+UPDATE Passenger
+SET Expiry = DATE '2028-03-15'
+WHERE PID = 'P2';
+
+CREATE OR REPLACE TRIGGER check_card_information
+BEFORE INSERT OR UPDATE ON PurchaseMedium
+FOR EACH ROW
+WHEN (NEW.MediumType = 'Card')
+DECLARE
+    v_cardno        Passenger.CardNo%TYPE;
+    v_securitycode  Passenger.SecurityCode%TYPE;
+    v_expiry        Passenger.Expiry%TYPE;
+BEGIN
+    -- Fetch the passenger information using the PID from PurchaseMedium
+    SELECT CardNo, SecurityCode, Expiry
+    INTO v_cardno, v_securitycode, v_expiry
+    FROM Passenger
+    WHERE PID = :NEW.PID;
+
+    -- Validate the values
+    IF v_cardno IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Card Number cannot be NULL for a Card medium.');
+    END IF;
+
+    IF v_securitycode IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Security Code cannot be NULL for a Card medium.');
+    END IF;
+
+    IF v_expiry IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Expiry Date cannot be NULL for a Card medium.');
+    END IF;
+
+END;
+/
+
+
+INSERT INTO PurchaseMedium 
+(TID, MediumType, UniqueID, PID)
+VALUES (
+    'T10',             -- NEW card ID
+    'Card',            -- Medium type
+    'CARD-99100',      -- Unique ID (hashed card token or reference)
+    'P1'               -- MUST be a registered passenger
+);
+
+UPDATE PurchaseMedium
+SET TID = 'T4'
+WHERE TID = 'T10';   -- or whatever the old TID was
+
+INSERT INTO Event VALUES (
+    'E4',
+    'CHECKIN',
+    SYSTIMESTAMP - INTERVAL '5' MINUTE,
+    NULL,
+    'STR',
+    'JUB',
+    'T2'
+);
+
+INSERT INTO Event VALUES (
+    'E5',
+    'CHECKOUT',
+    SYSTIMESTAMP - INTERVAL '1' MINUTE,
+    3.20,
+    'LST',
+    'CEN',
+    'T2'
+);
+
+INSERT INTO Event VALUES (
+    'E6',
+    'CHECKIN',
+    SYSTIMESTAMP - INTERVAL '4' MINUTE,
+    NULL,
+    'STR', 'CEN', 'T3'
+);
+
+INSERT INTO Event VALUES (
+    'E7',
+    'CHECKOUT',
+    SYSTIMESTAMP - INTERVAL '1' MINUTE,
+    2.50,
+    'LST', 'CEN', 'T3'
+);
+
+INSERT INTO Event VALUES (
+    'E8',
+    'CHECKIN',
+    SYSTIMESTAMP + INTERVAL '2' MINUTE,
+    NULL,
+    'STR', 'JUB', 'T4'
+);
+
+INSERT INTO Event VALUES (
+    'E9',
+    'CHECKOUT',
+    SYSTIMESTAMP + INTERVAL '4' MINUTE,
+    0.00,
+    'STR', 'JUB', 'T4'
+);
+
+ALTER TABLE PurchaseMedium
+ADD PurchaseDate DATE;
+
+UPDATE PurchaseMedium
+SET PurchaseDate = DATE '2025-11-01'
+WHERE TID = 'T1';
+
+UPDATE PurchaseMedium
+SET PurchaseDate = DATE '2025-11-10'
+WHERE TID = 'T2';
+
+UPDATE PurchaseMedium
+SET PurchaseDate = DATE '2025-11-15'
+WHERE TID = 'T3';
+
+UPDATE PurchaseMedium
+SET PurchaseDate = DATE '2025-11-20'
+WHERE TID = 'T4';
+
+CREATE OR REPLACE VIEW CompletedJourneys AS
+SELECT
+    e_in.TID,
+    e_in.EID  AS CheckInEvent,
+    e_out.EID AS CheckOutEvent,
+    e_in.EventDateTime AS CheckInTime,
+    e_out.EventDateTime AS CheckOutTime,
+    e_in.SID AS StartStation,
+    e_out.SID AS EndStation
+FROM Event e_in
+JOIN Event e_out
+    ON e_in.TID = e_out.TID
+   AND e_in.EventType = 'CHECKIN'
+   AND e_out.EventType = 'CHECKOUT'
+   AND e_out.EventDateTime > e_in.EventDateTime;
+
+CREATE OR REPLACE VIEW EventCountPerStation AS
+SELECT
+    SID,
+    COUNT(*) AS TotalEvents
+FROM Event
+GROUP BY SID;
+
+CREATE OR REPLACE VIEW PassengerCardSummary AS
+SELECT
+    p.PID,
+    p.FullName,
+    COUNT(pm.TID) AS NumberOfMedia
+FROM Passenger p
+LEFT JOIN PurchaseMedium pm ON p.PID = pm.PID
+GROUP BY p.PID, p.FullName;

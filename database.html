@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Database Systems | George Messer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">GM</a>
+
+        <ul class="nav-links">
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#tech">Tech Projects</a></li>
+            <li><a href="index.html#security">Security</a></li>
+            <li><a href="index.html#audio">Audio Projects</a></li>
+            <li><a href="index.html#experience">Experience</a></li>
+            <li><a href="index.html#skills">Skills</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+
+    <main>
+
+        <!-- PROJECT HERO -->
+        <section class="project-hero">
+
+            <p class="eyebrow">
+                DATABASE SYSTEMS • ORACLE SQL • DATABASE DESIGN
+            </p>
+
+            <h1>London Underground Event Database</h1>
+
+            <p class="project-hero-text">
+                A university Database Systems project involving the design and
+                implementation of a relational database for transport event data.
+                The project progressed from conceptual ER modelling through
+                relational schema design and normalisation to an Oracle SQL
+                implementation with constraints, queries, views and database logic.
+            </p>
+
+            <div class="tags project-hero-tags">
+                <span>Oracle SQL</span>
+                <span>Database Design</span>
+                <span>ER Modelling</span>
+                <span>3NF</span>
+                <span>Joins</span>
+                <span>Views</span>
+                <span>Constraints</span>
+                <span>Triggers</span>
+            </div>
+
+            <div class="hero-buttons">
+
+                <a href="sql/database.txt"
+                   class="button primary"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    View SQL Source
+                </a>
+
+                <a href="index.html#tech"
+                   class="button secondary">
+                    ← Back to Projects
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- OVERVIEW -->
+        <section class="section project-section">
+
+            <p class="section-label">01 — OVERVIEW</p>
+
+            <h2>From transport events to a relational database.</h2>
+
+            <p class="section-intro">
+                The project models transport activity using individual passenger
+                check-in and check-out events. Rather than assuming that complete
+                journeys already existed in the source data, events were modelled
+                explicitly and relationships were created between passengers,
+                purchase media, stations, lines and transport events.
+            </p>
+
+            <p class="section-intro">
+                This provided the foundation for querying passenger activity,
+                station usage, payment media and completed or incomplete journeys.
+            </p>
+
+        </section>
+
+
+        <!-- ER DIAGRAM -->
+        <section class="section project-section">
+
+            <p class="section-label">02 — CONCEPTUAL DESIGN</p>
+
+            <h2>Entity Relationship Model</h2>
+
+            <p class="section-intro">
+                The database was first modelled conceptually using a Classic Chen
+                Entity Relationship diagram. The model identifies the major
+                entities, their attributes, relationships, cardinalities and
+                participation constraints.
+            </p>
+
+            <div class="project-image-panel">
+
+                <a href="images/database/er-diagram.png"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    <img
+                        src="images/database/er-diagram.png"
+                        alt="Entity relationship diagram for the transport database"
+                        class="project-image">
+
+                </a>
+
+            </div>
+
+            <p class="image-caption">
+                Conceptual ER model showing passengers, purchase media,
+                stations, lines and transport events. Click the diagram
+                to view it at full size.
+            </p>
+
+        </section>
+
+
+        <!-- RELATIONAL SCHEMA -->
+        <section class="section project-section">
+
+            <p class="section-label">03 — RELATIONAL DESIGN</p>
+
+            <h2>Relational Table Schema</h2>
+
+            <p class="section-intro">
+                The conceptual model was converted into a relational schema with
+                primary keys, foreign keys and an associative StationLine relation.
+                StationLine resolves the many-to-many relationship between stations
+                and lines using a composite key.
+            </p>
+
+            <div class="project-image-panel">
+
+                <a href="images/database/relational-schema.png"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    <img
+                        src="images/database/relational-schema.png"
+                        alt="Relational table schema for the transport database"
+                        class="project-image">
+
+                </a>
+
+            </div>
+
+            <p class="image-caption">
+                Relational schema showing table references and primary and
+                foreign key relationships. Click the diagram to view it
+                at full size.
+            </p>
+
+        </section>
+
+
+        <!-- NORMALISATION -->
+        <section class="section project-section">
+
+            <p class="section-label">04 — NORMALISATION</p>
+
+            <h2>Normalised to Third Normal Form</h2>
+
+            <p class="section-intro">
+                The relational design was analysed through First, Second and Third
+                Normal Form. Attributes were separated into appropriate relations
+                and dependencies were considered to reduce duplication and avoid
+                insertion, update and deletion anomalies.
+            </p>
+
+            <div class="database-feature-grid">
+
+                <article class="project-card">
+                    <p class="project-number">1NF</p>
+                    <h3>Atomic Data</h3>
+
+                    <p>
+                        Relations were structured so attributes contained atomic
+                        values and repeating groups were removed.
+                    </p>
+                </article>
+
+
+                <article class="project-card">
+                    <p class="project-number">2NF</p>
+                    <h3>Key Dependencies</h3>
+
+                    <p>
+                        Non-key attributes were considered against their complete
+                        keys, including the composite key used by StationLine.
+                    </p>
+                </article>
+
+
+                <article class="project-card">
+                    <p class="project-number">3NF</p>
+                    <h3>Transitive Dependencies</h3>
+
+                    <p>
+                        The final design separates data into relations so non-key
+                        attributes depend on the relevant key rather than other
+                        non-key attributes.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- SQL IMPLEMENTATION -->
+        <section class="section project-section">
+
+            <p class="section-label">05 — IMPLEMENTATION</p>
+
+            <h2>Oracle SQL Implementation</h2>
+
+            <p class="section-intro">
+                The relational design was implemented in Oracle SQL using table
+                definitions, primary keys, foreign keys and integrity constraints.
+                Test data was then used to validate relationships and query the
+                resulting database.
+            </p>
+
+            <div class="code-example">
+
+<pre><code>CREATE TABLE StationLine (
+    SID VARCHAR2(10),
+    LID VARCHAR2(10),
+
+    CONSTRAINT pk_stationline
+        PRIMARY KEY (SID, LID),
+
+    CONSTRAINT fk_stationline_station
+        FOREIGN KEY (SID)
+        REFERENCES Station(SID),
+
+    CONSTRAINT fk_stationline_line
+        FOREIGN KEY (LID)
+        REFERENCES Line(LID)
+);</code></pre>
+
+            </div>
+
+            <p class="image-caption">
+                Example of using a composite primary key and foreign-key
+                constraints to represent the Station-Line relationship.
+            </p>
+
+        </section>
+
+
+        <!-- QUERYING -->
+        <section class="section project-section">
+
+            <p class="section-label">06 — DATA QUERYING</p>
+
+            <h2>SQL Queries & Analysis</h2>
+
+            <p class="section-intro">
+                SQL queries were developed to retrieve, filter, combine and
+                aggregate transport data. The work included filtering with WHERE,
+                sorting, date formatting, aggregate functions, GROUP BY, inner
+                joins, left joins and queries across related tables.
+            </p>
+
+
+            <div class="query-example">
+
+                <div class="query-description">
+
+                    <p class="project-number">QUERY 01</p>
+
+                    <h3>Passenger Event Analysis</h3>
+
+                    <p>
+                        Passenger records were connected to purchase media and
+                        transport events using LEFT JOIN operations. Events were
+                        then counted for each passenger using aggregation.
+                    </p>
+
+                    <div class="tags">
+                        <span>LEFT JOIN</span>
+                        <span>COUNT</span>
+                        <span>GROUP BY</span>
+                    </div>
+
+                </div>
+
+                <div class="code-example">
+
+<pre><code>SELECT
+    p.PID,
+    p.FullName,
+    COUNT(e.EID) AS TotalEvents
+FROM Passenger p
+LEFT JOIN PurchaseMedium pm
+    ON p.PID = pm.PID
+LEFT JOIN Event e
+    ON e.TID = pm.TID
+GROUP BY p.PID, p.FullName;</code></pre>
+
+                </div>
+
+            </div>
+
+
+            <div class="query-example">
+
+                <div class="query-description">
+
+                    <p class="project-number">QUERY 02</p>
+
+                    <h3>Events by Line</h3>
+
+                    <p>
+                        Event records were grouped by line to calculate activity
+                        across the transport network.
+                    </p>
+
+                    <div class="tags">
+                        <span>COUNT</span>
+                        <span>GROUP BY</span>
+                    </div>
+
+                </div>
+
+                <div class="code-example">
+
+<pre><code>SELECT
+    LID,
+    COUNT(*) AS TotalEvents
+FROM Event
+GROUP BY LID;</code></pre>
+
+                </div>
+
+            </div>
+
+
+            <div class="query-example">
+
+                <div class="query-description">
+
+                    <p class="project-number">QUERY 03</p>
+
+                    <h3>Passenger Payment Media</h3>
+
+                    <p>
+                        Passenger and purchase-medium relations were joined to
+                        identify passengers using card-based payment media.
+                    </p>
+
+                    <div class="tags">
+                        <span>JOIN</span>
+                        <span>WHERE</span>
+                        <span>Relational Query</span>
+                    </div>
+
+                </div>
+
+                <div class="code-example">
+
+<pre><code>SELECT
+    p.PID,
+    p.FullName,
+    pm.TID,
+    pm.MediumType
+FROM Passenger p
+JOIN PurchaseMedium pm
+    ON p.PID = pm.PID
+WHERE pm.MediumType = 'Card';</code></pre>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DATABASE SCREENSHOTS -->
+        <section class="section project-section">
+
+            <p class="section-label">
+                07 — DATABASE IN OPERATION
+            </p>
+
+            <h2>Queries & Database Views</h2>
+
+            <p class="section-intro">
+                The implemented database was tested in Oracle SQL using queries
+                across related tables and reusable views. These outputs demonstrate
+                joins, aggregation and higher-level analysis of transport events.
+            </p>
+
+            <div class="database-gallery">
+
+                <figure>
+
+                    <a href="images/database/card-passenger-query.png"
+                       target="_blank"
+                       rel="noopener noreferrer">
+
+                        <img
+                            src="images/database/card-passenger-query.png"
+                            alt="SQL query joining passengers with card purchase media">
+
+                    </a>
+
+                    <figcaption>
+                        Joining passenger and purchase-medium data to identify
+                        card-based payment media.
+                    </figcaption>
+
+                </figure>
+
+
+                <figure>
+
+                    <a href="images/database/passenger-event-query.png"
+                       target="_blank"
+                       rel="noopener noreferrer">
+
+                        <img
+                            src="images/database/passenger-event-query.png"
+                            alt="SQL query using left joins to count passenger events">
+
+                    </a>
+
+                    <figcaption>
+                        Using LEFT JOIN, COUNT and GROUP BY to calculate event
+                        totals for each passenger.
+                    </figcaption>
+
+                </figure>
+
+
+                <figure>
+
+                    <a href="images/database/latest-event-view.png"
+                       target="_blank"
+                       rel="noopener noreferrer">
+
+                        <img
+                            src="images/database/latest-event-view.png"
+                            alt="LatestEventPerMedium database view output">
+
+                    </a>
+
+                    <figcaption>
+                        LatestEventPerMedium provides the latest recorded event
+                        associated with each purchase medium.
+                    </figcaption>
+
+                </figure>
+
+
+                <figure>
+
+                    <a href="images/database/completed-journeys-view.png"
+                       target="_blank"
+                       rel="noopener noreferrer">
+
+                        <img
+                            src="images/database/completed-journeys-view.png"
+                            alt="CompletedJourneys database view output">
+
+                    </a>
+
+                    <figcaption>
+                        CompletedJourneys combines corresponding check-in and
+                        check-out events into journey-level results.
+                    </figcaption>
+
+                </figure>
+
+            </div>
+
+        </section>
+
+
+        <!-- DATABASE LOGIC -->
+        <section class="section project-section">
+
+            <p class="section-label">08 — DATABASE LOGIC</p>
+
+            <h2>Views, Constraints & Validation</h2>
+
+            <p class="section-intro">
+                The implementation extended beyond individual queries by creating
+                reusable database views and validation logic for common transport
+                analysis tasks.
+            </p>
+
+            <div class="database-feature-grid">
+
+                <article class="project-card">
+
+                    <h3>LatestEventPerMedium</h3>
+
+                    <p>
+                        Identifies the latest recorded event associated with each
+                        purchase medium.
+                    </p>
+
+                </article>
+
+
+                <article class="project-card">
+
+                    <h3>CompletedJourneys</h3>
+
+                    <p>
+                        Combines related check-in and check-out events to support
+                        journey-level analysis including journey times and start
+                        and end stations.
+                    </p>
+
+                </article>
+
+
+                <article class="project-card">
+
+                    <h3>EventCountPerStation</h3>
+
+                    <p>
+                        Aggregates event activity by station to provide a reusable
+                        station-level view.
+                    </p>
+
+                </article>
+
+
+                <article class="project-card">
+
+                    <h3>PassengerCardSummary</h3>
+
+                    <p>
+                        Summarises purchase-media information associated with
+                        passenger records.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="project-highlight">
+
+                <p class="project-number">DATA INTEGRITY</p>
+
+                <h3>Card Information Validation</h3>
+
+                <p>
+                    Database logic was also implemented to validate card-related
+                    information when card payment media was used, adding an
+                    additional integrity check beyond the relational key structure.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- FULL SQL SOURCE -->
+        <section class="section project-section">
+
+            <p class="section-label">09 — REPRODUCE THE DATABASE</p>
+
+            <h2>Full SQL Source</h2>
+
+            <p class="section-intro">
+                The complete Oracle SQL implementation is included with this
+                portfolio project. The source contains the database structure,
+                relationships, constraints, sample data, validation logic and
+                database views used by the project.
+            </p>
+
+            <div class="project-highlight">
+
+                <p class="project-number">DATABASE.TXT</p>
+
+                <h3>Run the Database</h3>
+
+                <p>
+                    View or download the complete SQL source, copy its contents
+                    into an Oracle SQL environment such as Oracle LiveSQL, and
+                    execute the script to create and populate the database.
+                    The database can then be explored using SQL queries.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="sql/database.txt"
+                       class="button primary"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        View Full SQL Source
+                    </a>
+
+                    <a href="sql/database.txt"
+                       class="button secondary"
+                       download="database.txt">
+                        Download SQL Source
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TECHNOLOGIES -->
+        <section class="section project-section">
+
+            <p class="section-label">
+                10 — TECHNOLOGIES & CONCEPTS
+            </p>
+
+            <h2>What the project covered</h2>
+
+            <div class="tags large-tags">
+
+                <span>Oracle SQL</span>
+                <span>Relational Databases</span>
+                <span>ER Modelling</span>
+                <span>Classic Chen</span>
+                <span>Relational Schema Design</span>
+
+                <span>1NF</span>
+                <span>2NF</span>
+                <span>3NF</span>
+
+                <span>Primary Keys</span>
+                <span>Foreign Keys</span>
+                <span>Composite Keys</span>
+
+                <span>Constraints</span>
+
+                <span>JOIN</span>
+                <span>LEFT JOIN</span>
+                <span>GROUP BY</span>
+                <span>Aggregate Functions</span>
+
+                <span>Views</span>
+                <span>Triggers</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROJECT NAVIGATION -->
+        <section class="section project-navigation">
+
+            <p class="section-label">PROJECTS</p>
+
+            <h2>Explore more work.</h2>
+
+            <div class="hero-buttons">
+
+                <a href="index.html#tech"
+                   class="button primary">
+                    Technical Projects
+                </a>
+
+                <a href="index.html#audio"
+                   class="button secondary">
+                    Audio Projects
+                </a>
+
+                <a href="https://github.com/gemesser"
+                   class="button secondary"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    GitHub
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 George Messer</p>
+    </footer>
+
+</body>
+
+</html>
