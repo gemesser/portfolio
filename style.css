@@ -69,9 +69,9 @@ img {
 
 .hero {
     max-width: 1200px;
-    min-height: 78vh;
+    min-height: auto;
     margin: 0 auto;
-    padding: 120px 32px 100px;
+    padding: 70px 32px 20px;
 
     display: flex;
     flex-direction: column;
@@ -152,6 +152,16 @@ img {
     max-width: 1200px;
     margin: 0 auto;
     padding: 100px 32px;
+}
+/* About section */
+#about {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+#about p:not(.section-label) {
+    max-width: 850px;
+    line-height: 1.8;
 }
 
 .section > h2 {
@@ -624,9 +634,11 @@ footer {
         padding: 20px;
     }
 
-    .nav-links {
-        display: none;
-    }
+   .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
 
 
     /* Homepage hero */
@@ -739,4 +751,8 @@ footer {
 
     border-radius: 7px;
     background: #000;
+}
+/* Spacing between coursework and technical projects */
+#tech > .project-grid {
+    margin-bottom: 60px;
 }
